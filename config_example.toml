@@ -1,0 +1,32 @@
+# optional (Gametitle Series Config)
+[series.ui_gametitle_team_sonic_racing]
+name_id="team_sonic_racing" # optional, default will be key.replace("ui_gametitle_", "")
+display_name="Team Sonic Racing" # required, but default will be "Missing" (Still not sure whether to make this required or not)
+ui_series_id="ui_series_sonic" # optional, default will be "ui_series_none"
+release=12 # optional, default will be 1
+some_bool="True" # optional, default will be True
+
+# optional (Music Config)
+[bgm_tsr_bingo_party] # specifiy file name without .nus3audio
+game_title="ui_gametitle_sonic_the_hedgehog" # default will be ui_gametitle_none
+title="Bingo Party" # default will not create a entry
+authors=[
+    "Jun Senoue",
+    "TORIENA"
+] # default will not create a entry
+copyright=[
+    "SEGA"
+] # default will not create a entry
+playlist=[
+    "bgmsonic",
+    "bgmteamsonicracing" # playlists that don't exist will be created
+] # default will be none
+record_type="record_arrange" # default will be record_original
+order=12 # default will be the last one
+orderX=25 # where X = numbers 0 to 16. This has a higher priority than normal order
+incidence=65535 # default will be 1500
+incidenceX=2500 # where X = numbers 0 to 16. This has a higher priority than normal incidence
+volume=25.32 # default will be 1.5
+special_category="0x105274ba4f" # default will be nothing
+info1="info_tsr_bingo_party_pinch" # default will be nothing
+

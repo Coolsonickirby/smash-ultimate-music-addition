@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist Order Manager</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery-3.5.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <style>
+        * {
+            color: white;
+        }
+
+        select,
+        option,
+        button {
+            color: black;
+        }
+
+        textarea,
+        input {
+            background-color: #2C2F33;
+            border-color: #849dc2;
+        }
+
+        body {
+            background-color: #2C2F33;
+        }
+
+        p {
+            margin-bottom: 0px;
+        }
+
+        .songs {
+            border: 2px solid #849dc2;
+            border-radius: 15px;
+            padding-left: 5px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .song_item {
+            border: 2px solid #627591;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding-left: 5px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <br>
+    <div class="container">
+        <select id="order_select" onchange="setup_order(this.value)">
+            <option value="album_order">Album Order</option>
+        </select>
+        <br>
+        <br>
+        <div class="container-fluid">
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div style="padding-left: 0px;" class="col-md-6">
+                        <label>Songs List:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <label>TOML Input/Output:</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="songs" id="songs">
+                        <!-- <div class="song_item">
+                            <p>bgm_satbk_with_me</p>
+                            <br>
+                            <label for="myRange">Incidence (Current: XXX):</label>
+                            <br>
+                            <input type="range" min="0" max="10000" value="1500" class="slider" id="myRange" style="width: 98%;">
+                        </div>
+                        <div class="song_item">
+                            <p>bgm_satbk_live_life</p>
+                        </div>
+                        <div class="song_item">
+                            <p>bgm_satbk_through_the_fire</p>
+                        </div>
+                        <div class="song_item">
+                            <p>bgm_satbk_fight_the_knight</p>
+                        </div>
+                        <div class="song_item">
+                            <p>bgm_satbk_shrouded_forest</p>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <textarea id="toml_input" style="width: 100%;height: 100%; resize: none;"></textarea>
+                </div>
+            </div>
+        </div>
+        <br>
+        <table>
+            <tr>
+                <td><label for="song_prefix_filename">Song Prefix (Filename):&nbsp;</label></td>
+                <td><input id="song_prefix_filename"></td>
+            </tr>
+            <tr>
+                <td><label for="song_name">New Song Filename:&nbsp;</label></td>
+                <td><input id="song_name"></td>
+            </tr>
+            <tr>
+                <td><label for="song_title">Song Title:</label></td>
+                <td><input id="song_title"></td>
+            </tr>
+            <tr>
+                <td><label for="song_author">Song Author:</label></td>
+                <td><textarea id="song_author" style="width: 100%;"></textarea></td>
+            </tr>
+            <tr>
+                <td><label for="song_copyright">Song Copyright:</label></td>
+                <td><textarea id="song_copyright" style="width: 100%;"></textarea></td>
+            </tr>
+            <tr>
+                <td><label for="song_gametitle">Gametitle:</label></td>
+                <td><input id="song_gametitle"></td>
+            </tr>
+            <tr>
+                <td><label for="record_type">Record Type:</label></td>
+                <td>
+                    <select id="record_type" style="width: 100%;">
+                        <option value="record_none">None</option>
+                        <option value="record_original">Original</option>
+                        <option value="record_arrange">Remix</option>
+                        <option value="record_new_arrange">New Remix</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="song_volume">Volume:</label></td>
+                <td><input type="number" step="0.5" value="1.0" id="song_volume"></td>
+            </tr>
+        </table>
+
+        <button
+            onclick="add_song(`${document.getElementById('song_prefix_filename').value}${document.getElementById('song_name').value}`)">Add</button>
+        <br>
+
+        <table>
+            <tr>
+                <td> <label for="start_number">Start Order Number:</label>
+                </td>
+                <td> <input id="start_number" type="number" value="0" step="1">
+                </td>
+            </tr>
+            <tr>
+                <td><label for="start_album_number">Start Album Order Number:</label></td>
+                <td><input id="start_album_number" type="number" value="0" step="1"></td>
+            </tr>
+        </table>
+
+
+
+    </div>
+
+    <script src="js/fast-toml.js"></script>
+    <script src="js/tomlify.min.js"></script>
+    <script src="js/html5sortable.min.js"></script>
+
+    <script>
+        var songs_info = {};
+
+        for (var i = 0; i < 16; i++) {
+            var node = document.createElement("option");
+            node.value = `${i}`;
+            node.innerHTML = `Order ${i}`;
+            document.getElementById("order_select").appendChild(node);
+        }
+
+        document.getElementById("toml_input").addEventListener("input", function (e) {
+            songs_info = TOML.parse(this.value);
+            setup_order(document.getElementById("order_select").value)
+        });
+
+
+
+        function setup_order(order_num) {
+            document.getElementById("songs").innerHTML = "";
+
+            var old_element = document.getElementById("songs");
+            var new_element = old_element.cloneNode(true);
+            old_element.parentNode.replaceChild(new_element, old_element);
+
+            var array_sort = [];
+
+            for ([key, value] of Object.entries(songs_info)) {
+                if (key == "series") {
+                    continue
+                }
+                let order_value = 99999;
+                switch (order_num) {
+                    case "album_order":
+                        order_value = value[`album_order`] != undefined ? value[`album_order`] : 99999
+                        break;
+                    default:
+                        order_value = value[`order${order_num}`] != undefined ? value[`order${order_num}`] : 99999
+
+                }
+                array_sort.push([key, order_value]);
+            };
+
+            array_sort.sort(function compare(kv1, kv2) {
+                return kv1[1] - kv2[1]
+            });
+
+            array_sort.forEach(function (item, index) {
+                var node = document.createElement("div");
+                node.classList = ["song_item"];
+                node.setAttribute("data-key", item[0]);
+                var color = "inital";
+
+                if ("record_type" in songs_info[item[0]]) {
+                    switch (songs_info[item[0]]["record_type"]) {
+                        case "record_arrange":
+                            color = "lightblue";
+                            break;
+                        case "record_new_arrange":
+                            color = "orangered";
+                    }
+                }
+
+
+
+                node.innerHTML = `
+                <p class="sort_hold" style="color: ${color};">
+                ${("title" in songs_info[item[0]]) ? songs_info[item[0]]["title"] : item[0]}
+                </p>`;
+
+                if (order_num == "album_order"){
+                    document.getElementById("songs").appendChild(node);
+                    return;
+                }
+
+                var slider = document.createElement("input");
+                slider.type = "range";
+                slider.min = 0;
+                slider.max = 10000;
+                slider.style.width = "98%";
+                slider.value = (
+                    `incidence${order_num}` in songs_info[item[0]] ? songs_info[item[0]][`incidence${order_num}`] :
+                    `incidence` in songs_info[item[0]] ? songs_info[item[0]][`incidence`]
+                            : 1500);
+                            console.log(slider.value);
+                slider.addEventListener("input", function (e) {
+                    songs_info[item[0]][`incidence${order_num}`] = this.value;
+                    document.getElementById(`inc_info_${index}`).innerHTML = `Incidence (Current: ${slider.value}):`;
+                    document.getElementById("toml_input").value = toToml(songs_info);
+                });
+
+                node.innerHTML += `
+                <br>
+                <label for="inc_slider_${index}" id="inc_info_${index}">Incidence (Current: ${slider.value}}):</label>
+                <br>
+                `;
+                
+                node.appendChild(slider);
+                
+
+                document.getElementById("songs").appendChild(node);
+            });
+
+            var order_start = 0;
+
+            if(order_num == "album_order"){
+                order_start = document.getElementById("start_album_number").value != undefined && document.getElementById("start_album_number").value != null ? document.getElementById("start_album_number").value : 0
+            }else{
+                order_start = document.getElementById("start_number").value != undefined && document.getElementById("start_number").value != null ? document.getElementById("start_number").value : 0;
+            }
+
+            sortable('#songs', {
+                handle: 'p'
+            })[0].addEventListener('sortupdate', function (e) {
+                document.getElementById("songs").querySelectorAll("div").forEach(function (item) {
+                    var order_key = order_num == "album_order" ? "album_order" : `order${order_num}`;
+                    songs_info[item.getAttribute("data-key")][order_key] = order_start
+                    order_start++;
+                });
+
+                order_start = document.getElementById("start_number").value != undefined && document.getElementById("start_number").value != null ? document.getElementById("start_number").value : 0;
+
+                document.getElementById("toml_input").value = toToml(songs_info);
+            });
+        }
+
+        function add_song(song_name) {
+            if (!(song_name in songs_info)) {
+                songs_info[song_name] = {
+                    "title": document.getElementById("song_title").value != "" ? document.getElementById("song_title").value : song_name,
+                    "author": document.getElementById("song_author").value != "" ? document.getElementById("song_author").value.split("\n") : [],
+                    "copyright": document.getElementById("song_copyright").value != "" ? document.getElementById("song_copyright").value.split("\n") : [],
+                    "game_title": document.getElementById("song_gametitle").value != "" ? document.getElementById("song_gametitle").value : "ui_gametitle_none",
+                    "playlist": ["bgmsonic"],
+                    "volume": document.getElementById("song_volume").value != "" ? parseFloat(document.getElementById("song_volume").value) : 1.0,
+                    "record_type": document.getElementById("record_type").value
+                };
+                setup_order(document.getElementById("order_select").value);
+                document.getElementById("toml_input").value = toToml(songs_info);
+            }
+        }
+
+        function toToml(dict) {
+            return tomlify.toToml(dict, {
+                replace: function (key, value) {
+                    var context = this;
+                    var path = tomlify.toKey(context.path);
+                    if (/(order)/.test(path) || /(incidence)/.test(path) || /(release)/.test(path)) {
+                        return `${parseInt(value)}`;  // Change the text transformed from the value.
+                    }
+                    return false;  // Let tomlify decide for you.
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

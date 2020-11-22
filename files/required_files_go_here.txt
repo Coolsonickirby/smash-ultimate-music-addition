@@ -1,0 +1,6 @@
+- base.nus3bank (Please make sure it's bgm_ps05_p4_timeto_makehistory as that's what I'm using. Others most likely won't work)
+- bgm_property.bin
+- msg_bgm.msbt
+- msg_title.msbt
+- ui_bgm_db.prc
+- ui_gametitle_db.prc

@@ -1,0 +1,12 @@
+__pycache__/
+.vscode/
+music/*
+output/
+*.prc
+*.msbt
+*.bin
+*.nus3bank
+*.nus3audio
+config_ftp.toml
+
+!music/music_stuff_goes_here
