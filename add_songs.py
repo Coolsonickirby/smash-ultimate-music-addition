@@ -64,10 +64,13 @@ bgm_xmsbt_root = Element("xmsbt")
 title_xmsbt_root = Element("xmsbt")
 config_toml = {}
 config_series = {}
-ftp_info = toml.load("config_ftp.toml")
+ftp_info = {}
 used_ftp = False
 
 #region Setting up Info
+if os.path.exists("config_ftp.toml"):
+    ftp_info = toml.load("config_ftp.toml")
+
 # Convert bgm_property.bin to bgm_prop.yaml
 printTitle("Converting bgm_property.bin")
 subprocess.call(["tools/bgm-property.exe", "files/bgm_property.bin", "tmp/bgm_prop.yaml"])

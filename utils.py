@@ -1,4 +1,4 @@
-import binascii, struct, math
+import binascii, struct, math, os
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 from colorama import Fore
 from colorama import Style
