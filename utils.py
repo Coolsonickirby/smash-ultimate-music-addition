@@ -193,7 +193,7 @@ def get_highest_ids(ui_bgm_db):
         "menu_value": menu_value_latest + 1
     }
 
-def add_song_to_files(ui_bgm_db, bgm_property, xmsbt, info, nus3bank_id):
+def add_song_to_files(ui_bgm_db, bgm_property, xmsbt, info, nus3bank_id, config_main):
     
     if "authors" in info:
         info["authors"] = '\n'.join(info["authors"])
@@ -243,17 +243,17 @@ def add_song_to_files(ui_bgm_db, bgm_property, xmsbt, info, nus3bank_id):
         ],
         "string": insertHashValue("name_id", latest_ids["msg_id"]),
         "short": [
-            insertHashValue("save_no", latest_ids["save_no"]),
+            insertHashValue("save_no", latest_ids["save_no"] if config_main["use_latest_save_no"] == "True" else 0),
             insertHashValue("test_disp_order", info["album_order"] if "album_order" in info else latest_ids["test_disp_order"])
         ],
         "int": insertHashValue("menu_value", latest_ids["menu_value"]),
         "bool": [
             insertHashValue("jp_region", "True"),
             insertHashValue("other_region", "True"),
-            insertHashValue("possessed", "False"),
+            insertHashValue("possessed", "True"),
             insertHashValue("prize_lottery", "False"),
             insertHashValue("count_target", "True"),
-            insertHashValue("0x187162d1e8", "False"),
+            insertHashValue("0x187162d1e8", "True"),
             insertHashValue("0x18db285704", "True"),
             insertHashValue("0x16fe9a28fe", "True"),
             insertHashValue("is_dlc", "False"),

@@ -65,11 +65,17 @@ title_xmsbt_root = Element("xmsbt")
 config_toml = {}
 config_series = {}
 ftp_info = {}
+config_main = {}
 used_ftp = False
 
 #region Setting up Info
 if os.path.exists("config_ftp.toml"):
     ftp_info = toml.load("config_ftp.toml")
+
+if os.path.exists("config_main.toml"):
+    config_main = toml.load("config_main.toml")
+else:
+    config_main["use_latest_save_no"] = "False"
 
 # Convert bgm_property.bin to bgm_prop.yaml
 printTitle("Converting bgm_property.bin")
@@ -254,7 +260,7 @@ for subdir, dirs, files in os.walk(music_folder):
             if "special_category" in info:
                 print("\t - Special Category: %s" % info["special_category"])
             
-            add_song_to_files(ui_bgm_db, bgm_property, bgm_xmsbt_root, info, latest_id)
+            add_song_to_files(ui_bgm_db, bgm_property, bgm_xmsbt_root, info, latest_id, config_main)
             printSuccess("Successfully added %s" % info["file_name"] )
         elif hash(filename[:-10]) in all_songs_in_db:
             printWarning("Ignoring %s (already in the game)" % filename[:-10])

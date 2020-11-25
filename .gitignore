@@ -9,5 +9,5 @@ tmp
 *.nus3bank
 *.nus3audio
 config_ftp.toml
-
+config_main.toml
 !music/music_stuff_goes_here
